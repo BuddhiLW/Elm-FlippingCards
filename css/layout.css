@@ -5,7 +5,7 @@ div{
 .tarot {
     display:flex;
     flex-wrap:wrap;
-    margin: 10px auto;
+    margin: 20 wv 10%;
     width: 100 wv;
     position: inherit;
 }
@@ -45,6 +45,7 @@ body {
 /* } */
 
 h1 {
+    position: absolute;
     font-family: Roboto;
     font-size: 56px;
     font-weight: 700;

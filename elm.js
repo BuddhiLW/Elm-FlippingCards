@@ -4435,8 +4435,8 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
-var $author$project$PhotoGroove$initialModel = {
-	photos: _List_fromArray(
+var $author$project$Flipping$initialModel = {
+	cards: _List_fromArray(
 		[
 			{card: 0, url: 'Gita.jpg'},
 			{card: 1, url: 'Kali.jpg'},
@@ -4446,7 +4446,7 @@ var $author$project$PhotoGroove$initialModel = {
 			{card: 5, url: 'siddartha.jpg'},
 			{card: 6, url: 'bodhidharma2.jpg'}
 		]),
-	selectedUrl: ''
+	selectedCard: ''
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -5178,11 +5178,11 @@ var $elm$browser$Browser$sandbox = function (impl) {
 			view: impl.view
 		});
 };
-var $author$project$PhotoGroove$update = F2(
+var $author$project$Flipping$update = F2(
 	function (msg, model) {
 		return (msg.description === 'ClickedPhoto') ? _Utils_update(
 			model,
-			{selectedUrl: msg.data}) : model;
+			{selectedCard: msg.data}) : model;
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5242,8 +5242,8 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$PhotoGroove$initializeCards = F2(
-	function (selectedUrl, photo) {
+var $author$project$Flipping$initializeCards = F2(
+	function (selectedCard, card) {
 		return A2(
 			$elm$html$Html$li,
 			_List_fromArray(
@@ -5253,17 +5253,17 @@ var $author$project$PhotoGroove$initializeCards = F2(
 						_List_fromArray(
 							[
 								'card',
-								$elm$core$String$fromInt(photo.card)
+								$elm$core$String$fromInt(card.card)
 							]))),
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
 							_Utils_Tuple2(
 							'active',
-							_Utils_eq(selectedUrl, photo.url))
+							_Utils_eq(selectedCard, card.url))
 						])),
 					$elm$html$Html$Events$onClick(
-					{data: photo.url, description: 'ClickedPhoto'})
+					{data: card.url, description: 'ClickedPhoto'})
 				]),
 			_List_Nil);
 	});
@@ -5271,7 +5271,7 @@ var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $author$project$PhotoGroove$view = function (model) {
+var $author$project$Flipping$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -5313,11 +5313,11 @@ var $author$project$PhotoGroove$view = function (model) {
 				_List_Nil,
 				A2(
 					$elm$core$List$map,
-					$author$project$PhotoGroove$initializeCards(model.selectedUrl),
-					model.photos))
+					$author$project$Flipping$initializeCards(model.selectedCard),
+					model.cards))
 			]));
 };
-var $author$project$PhotoGroove$main = $elm$browser$Browser$sandbox(
-	{init: $author$project$PhotoGroove$initialModel, update: $author$project$PhotoGroove$update, view: $author$project$PhotoGroove$view});
-_Platform_export({'PhotoGroove':{'init':$author$project$PhotoGroove$main(
+var $author$project$Flipping$main = $elm$browser$Browser$sandbox(
+	{init: $author$project$Flipping$initialModel, update: $author$project$Flipping$update, view: $author$project$Flipping$view});
+_Platform_export({'Flipping':{'init':$author$project$Flipping$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
