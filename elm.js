@@ -4438,15 +4438,15 @@ var $elm$core$Basics$LT = {$: 'LT'};
 var $author$project$Flipping$initialModel = {
 	cards: _List_fromArray(
 		[
-			{card: 0, url: 'Gita.jpg'},
-			{card: 1, url: 'Kali.jpg'},
-			{card: 2, url: 'Arjuna.jpg'},
-			{card: 3, url: 'Krishna.jpg'},
-			{card: 4, url: 'Manjusri.jpg'},
-			{card: 5, url: 'siddartha.jpg'},
-			{card: 6, url: 'bodhidharma2.jpg'}
+			{card: 1, url: 'Gita.jpg'},
+			{card: 2, url: 'Kali.jpg'},
+			{card: 3, url: 'Arjuna.jpg'},
+			{card: 4, url: 'Krishna.jpg'},
+			{card: 5, url: 'Manjusri.jpg'},
+			{card: 6, url: 'siddartha.jpg'},
+			{card: 7, url: 'bodhidharma2.jpg'}
 		]),
-	selectedCard: ''
+	selectedCard: 'card1'
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -5180,9 +5180,14 @@ var $elm$browser$Browser$sandbox = function (impl) {
 };
 var $author$project$Flipping$update = F2(
 	function (msg, model) {
-		return (msg.description === 'ClickedPhoto') ? _Utils_update(
-			model,
-			{selectedCard: msg.data}) : model;
+		var _v0 = msg.description;
+		if (_v0 === 'ClickedPhoto') {
+			return _Utils_update(
+				model,
+				{selectedCard: msg.data.id});
+		} else {
+			return model;
+		}
 	});
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5193,6 +5198,17 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
@@ -5242,28 +5258,32 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Flipping$initializeCards = F2(
-	function (selectedCard, card) {
+var $author$project$Flipping$initializeCards = F3(
+	function (n, selectedCard, card) {
+		var strId = $elm$core$String$fromInt(n * card.card);
+		var strCardId = $elm$core$String$concat(
+			_List_fromArray(
+				[
+					'card',
+					$elm$core$String$fromInt(n * card.card)
+				]));
 		return A2(
 			$elm$html$Html$li,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$id(
-					$elm$core$String$concat(
-						_List_fromArray(
-							[
-								'card',
-								$elm$core$String$fromInt(card.card)
-							]))),
+					$elm$html$Html$Attributes$id(strCardId),
 					$elm$html$Html$Attributes$classList(
 					_List_fromArray(
 						[
 							_Utils_Tuple2(
 							'active',
-							_Utils_eq(selectedCard, card.url))
+							_Utils_eq(selectedCard, strCardId))
 						])),
 					$elm$html$Html$Events$onClick(
-					{data: card.url, description: 'ClickedPhoto'})
+					{
+						data: {id: strCardId, url: card.url},
+						description: 'ClickedPhoto'
+					})
 				]),
 			_List_Nil);
 	});
@@ -5308,13 +5328,22 @@ var $author$project$Flipping$view = function (model) {
 					[
 						$elm$html$Html$text('TAROT CARD GAME')
 					])),
-				A2(
-				$elm$html$Html$ul,
-				_List_Nil,
-				A2(
+				function () {
+				var cardViews2 = A2(
 					$elm$core$List$map,
-					$author$project$Flipping$initializeCards(model.selectedCard),
-					model.cards))
+					A2($author$project$Flipping$initializeCards, 10, model.selectedCard),
+					model.cards);
+				var cardViews1 = A2(
+					$elm$core$List$map,
+					A2($author$project$Flipping$initializeCards, 1, model.selectedCard),
+					model.cards);
+				return A2(
+					$elm$html$Html$ul,
+					_List_Nil,
+					$elm$core$List$concat(
+						_List_fromArray(
+							[cardViews1, cardViews2])));
+			}()
 			]));
 };
 var $author$project$Flipping$main = $elm$browser$Browser$sandbox(

@@ -19,15 +19,31 @@ view model =
             , text " seconds"
             ]
         , h1 [ class "center" ] [ text "TAROT CARD GAME" ]
-        , ul [] (List.map (initializeCards model.selectedCard) model.cards)
+        , let
+            -- Stantiate two intances of cards: https://discourse.elm-lang.org/t/sequential-function-calls/8205/2
+            cardViews1 =
+                List.map (initializeCards 1 model.selectedCard) model.cards
+
+            cardViews2 =
+                List.map (initializeCards 10 model.selectedCard) model.cards
+          in
+          Html.ul []
+            (List.concat [ cardViews1, cardViews2 ])
         ]
 
 
-initializeCards selectedCard card =
+initializeCards n selectedCard card =
+    let
+        strId =
+            String.fromInt (n * card.card)
+
+        strCardId =
+            String.concat [ "card", String.fromInt (n * card.card) ]
+    in
     li
-        [ id (String.concat [ "card", String.fromInt card.card ])
-        , classList [ ( "active", selectedCard == card.url ) ]
-        , onClick { description = "ClickedPhoto", data = card.url }
+        [ id strCardId
+        , classList [ ( "active", selectedCard == strCardId ) ]
+        , onClick { description = "ClickedPhoto", data = { url = card.url, id = strCardId } }
         ]
         []
 
@@ -53,17 +69,17 @@ type Selection
 
 initialModel =
     { cards =
-        [ { url = "Gita.jpg", card = 0 }
-        , { url = "Kali.jpg", card = 1 }
-        , { url = "Arjuna.jpg", card = 2 }
-        , { url = "Krishna.jpg", card = 3 }
-        , { url = "Manjusri.jpg", card = 4 }
-        , { url = "siddartha.jpg", card = 5 }
-        , { url = "bodhidharma2.jpg", card = 6 }
+        [ { url = "Gita.jpg", card = 1 }
+        , { url = "Kali.jpg", card = 2 }
+        , { url = "Arjuna.jpg", card = 3 }
+        , { url = "Krishna.jpg", card = 4 }
+        , { url = "Manjusri.jpg", card = 5 }
+        , { url = "siddartha.jpg", card = 6 }
+        , { url = "bodhidharma2.jpg", card = 7 }
 
         -- , { url = "laughting-buddha-fit-nobg.png", card = 7 }
         ]
-    , selectedCard = ""
+    , selectedCard = "card1"
 
     -- , seletedUrls = []
     -- , completedPairs = []
@@ -80,16 +96,14 @@ initialModel =
 --     else
 --         List.drop 2 selectedCards
 -- setSelected : String -> Msg -> Msg
-
-
-setSelectedUrl url model =
-    { model | selectedCard = url }
+-- setSelectedUrl url model =
+--     { model | selectedCard = url }
 
 
 update msg model =
     case msg.description of
         "ClickedPhoto" ->
-            { model | selectedCard = msg.data }
+            { model | selectedCard = msg.data.id }
 
         _ ->
             model
