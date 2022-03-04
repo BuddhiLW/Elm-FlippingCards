@@ -4435,18 +4435,21 @@ var $elm$core$Set$toList = function (_v0) {
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
+var $elm$core$Basics$False = {$: 'False'};
 var $author$project$Flipping$initialModel = {
+	activeCard: '',
 	cards: _List_fromArray(
 		[
-			{card: 1, url: 'Gita.jpg'},
-			{card: 2, url: 'Kali.jpg'},
-			{card: 3, url: 'Arjuna.jpg'},
-			{card: 4, url: 'Krishna.jpg'},
-			{card: 5, url: 'Manjusri.jpg'},
-			{card: 6, url: 'siddartha.jpg'},
-			{card: 7, url: 'bodhidharma2.jpg'}
+			{card: 1, selected: false, url: 'Gita.jpg'},
+			{card: 2, selected: false, url: 'Kali.jpg'},
+			{card: 3, selected: false, url: 'Arjuna.jpg'},
+			{card: 4, selected: false, url: 'Krishna.jpg'},
+			{card: 5, selected: false, url: 'Manjusri.jpg'},
+			{card: 6, selected: false, url: 'siddartha.jpg'},
+			{card: 7, selected: false, url: 'bodhidharma2.jpg'}
 		]),
-	selectedCard: 'card1'
+	selectedCards: _List_fromArray(
+		['card1'])
 };
 var $elm$core$Result$Err = function (a) {
 	return {$: 'Err', a: a};
@@ -4469,7 +4472,6 @@ var $elm$core$Result$Ok = function (a) {
 var $elm$json$Json$Decode$OneOf = function (a) {
 	return {$: 'OneOf', a: a};
 };
-var $elm$core$Basics$False = {$: 'False'};
 var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
@@ -5180,11 +5182,11 @@ var $elm$browser$Browser$sandbox = function (impl) {
 };
 var $author$project$Flipping$update = F2(
 	function (msg, model) {
-		var _v0 = msg.description;
-		if (_v0 === 'ClickedPhoto') {
+		if (msg.$ === 'ClickedCard') {
+			var data = msg.a;
 			return _Utils_update(
 				model,
-				{selectedCard: msg.data.id});
+				{activeCard: data.id});
 		} else {
 			return model;
 		}
@@ -5212,6 +5214,39 @@ var $elm$core$List$concat = function (lists) {
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $author$project$Flipping$ClickedCard = function (a) {
+	return {$: 'ClickedCard', a: a};
+};
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $author$project$Flipping$anyCardIn = F2(
+	function (card, list) {
+		return A2(
+			$elm$core$List$any,
+			function (cardIn) {
+				return _Utils_eq(card, cardIn);
+			},
+			list);
+	});
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
 		return A3(
@@ -5258,8 +5293,8 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Flipping$initializeCards = F3(
-	function (n, selectedCard, card) {
+var $author$project$Flipping$initializeCards = F4(
+	function (n, selectedCards, activeCard, card) {
 		var strId = $elm$core$String$fromInt(n * card.card);
 		var strCardId = $elm$core$String$concat(
 			_List_fromArray(
@@ -5277,13 +5312,18 @@ var $author$project$Flipping$initializeCards = F3(
 						[
 							_Utils_Tuple2(
 							'active',
-							_Utils_eq(selectedCard, strCardId))
+							_Utils_eq(activeCard, strCardId))
+						])),
+					$elm$html$Html$Attributes$classList(
+					_List_fromArray(
+						[
+							_Utils_Tuple2(
+							'active',
+							A2($author$project$Flipping$anyCardIn, strCardId, selectedCards))
 						])),
 					$elm$html$Html$Events$onClick(
-					{
-						data: {id: strCardId, url: card.url},
-						description: 'ClickedPhoto'
-					})
+					$author$project$Flipping$ClickedCard(
+						{id: strCardId, url: card.url}))
 				]),
 			_List_Nil);
 	});
@@ -5331,11 +5371,11 @@ var $author$project$Flipping$view = function (model) {
 				function () {
 				var cardViews2 = A2(
 					$elm$core$List$map,
-					A2($author$project$Flipping$initializeCards, 10, model.selectedCard),
+					A3($author$project$Flipping$initializeCards, 10, model.selectedCards, model.activeCard),
 					model.cards);
 				var cardViews1 = A2(
 					$elm$core$List$map,
-					A2($author$project$Flipping$initializeCards, 1, model.selectedCard),
+					A3($author$project$Flipping$initializeCards, 1, model.selectedCards, model.activeCard),
 					model.cards);
 				return A2(
 					$elm$html$Html$ul,

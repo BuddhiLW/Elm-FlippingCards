@@ -4,13 +4,16 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import List exposing (head, tail)
 import String
 
 
+urlPrefix : String
 urlPrefix =
     "img/"
 
 
+view : Model -> Html Msg
 view model =
     div [ class "tarot" ]
         [ div [ id "counter" ]
@@ -22,17 +25,21 @@ view model =
         , let
             -- Stantiate two intances of cards: https://discourse.elm-lang.org/t/sequential-function-calls/8205/2
             cardViews1 =
-                List.map (initializeCards 1 model.selectedCard) model.cards
+                List.map (initializeCards 1 model.selectedCards model.activeCard) model.cards
 
             cardViews2 =
-                List.map (initializeCards 10 model.selectedCard) model.cards
+                List.map (initializeCards 10 model.selectedCards model.activeCard) model.cards
           in
           Html.ul []
             (List.concat [ cardViews1, cardViews2 ])
         ]
 
 
-initializeCards n selectedCard card =
+anyCardIn card list =
+    List.any (\cardIn -> card == cardIn) list
+
+
+initializeCards n selectedCards activeCard card =
     let
         strId =
             String.fromInt (n * card.card)
@@ -42,8 +49,9 @@ initializeCards n selectedCard card =
     in
     li
         [ id strCardId
-        , classList [ ( "active", selectedCard == strCardId ) ]
-        , onClick { description = "ClickedPhoto", data = { url = card.url, id = strCardId } }
+        , classList [ ( "active", activeCard == strCardId ) ]
+        , classList [ ( "active", anyCardIn strCardId selectedCards ) ]
+        , onClick (ClickedCard { url = card.url, id = strCardId })
         ]
         []
 
@@ -51,35 +59,38 @@ initializeCards n selectedCard card =
 type alias Card =
     { url : String
     , card : Int
+    , selected : Bool
     }
 
 
 type alias Model =
     { cards : List Card
-    , selectedCard : String
+    , selectedCards : List String
+    , activeCard : String
     }
 
 
-type Selection
-    = None
-    | One
-    | IncorrectPair
-    | CorrectPair
+
+-- type Selection
+--     = None
+--     | One
+--     | IncorrectPair
+--     | CorrectPair
 
 
+initialModel : Model
 initialModel =
     { cards =
-        [ { url = "Gita.jpg", card = 1 }
-        , { url = "Kali.jpg", card = 2 }
-        , { url = "Arjuna.jpg", card = 3 }
-        , { url = "Krishna.jpg", card = 4 }
-        , { url = "Manjusri.jpg", card = 5 }
-        , { url = "siddartha.jpg", card = 6 }
-        , { url = "bodhidharma2.jpg", card = 7 }
-
-        -- , { url = "laughting-buddha-fit-nobg.png", card = 7 }
+        [ { url = "Gita.jpg", card = 1, selected = False }
+        , { url = "Kali.jpg", card = 2, selected = False }
+        , { url = "Arjuna.jpg", card = 3, selected = False }
+        , { url = "Krishna.jpg", card = 4, selected = False }
+        , { url = "Manjusri.jpg", card = 5, selected = False }
+        , { url = "siddartha.jpg", card = 6, selected = False }
+        , { url = "bodhidharma2.jpg", card = 7, selected = False }
         ]
-    , selectedCard = "card1"
+    , selectedCards = [ "card1" ]
+    , activeCard = ""
 
     -- , seletedUrls = []
     -- , completedPairs = []
@@ -100,10 +111,16 @@ initialModel =
 --     { model | selectedCard = url }
 
 
+type Msg
+    = ClickedCard { url : String, id : String }
+    | Other
+
+
+update : Msg -> Model -> Model
 update msg model =
-    case msg.description of
-        "ClickedPhoto" ->
-            { model | selectedCard = msg.data.id }
+    case msg of
+        ClickedCard data ->
+            { model | activeCard = data.id }
 
         _ ->
             model
